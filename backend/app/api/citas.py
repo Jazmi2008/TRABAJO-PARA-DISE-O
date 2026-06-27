@@ -74,7 +74,6 @@ def crear_cita(req: CrearCitaRequest):
 
 @router.get("/todas")
 def obtener_todas_las_citas():
-    """Solo para recepcionista: ver todas las citas del sistema"""
     citas = gestor.obtener_todas_las_citas()
     return {"citas": [c.to_dict() for c in citas]}
 
@@ -82,15 +81,39 @@ def obtener_todas_las_citas():
 def buscar_citas(
     fecha: Optional[str] = Query(None, description="Fecha en formato YYYY-MM-DD"),
     nombre: Optional[str] = Query(None, description="Nombre del paciente (parcial)"),
-    id_cita: Optional[str] = Query(None, description="ID exacto de la cita")
+    id_cita: Optional[str] = Query(None, description="ID exacto de la cita"),
+    doctor_id: Optional[str] = Query(None, description="ID del doctor"),
+    paciente_id: Optional[str] = Query(None, description="ID del paciente")
 ):
-    """Buscar citas por fecha, nombre de paciente o ID"""
-    resultados = gestor.buscar_citas(fecha=fecha, nombre=nombre, id_cita=id_cita)
+    resultados = gestor.buscar_citas(fecha=fecha, nombre=nombre, id_cita=id_cita,
+                                      doctor_id=doctor_id, paciente_id=paciente_id)
     return {"citas": [c.to_dict() for c in resultados]}
+
+@router.get("/{id_cita}")
+def obtener_cita(id_cita: str):
+    cita = gestor.consultar_cita(id_cita)
+    if not cita:
+        raise HTTPException(status_code=404, detail="Cita no encontrada")
+    return {"cita": cita.to_dict()}
+
+@router.get("/{id_cita}/detalle-completo")
+def obtener_cita_detalle_completo(id_cita: str):
+    cita = gestor.consultar_cita(id_cita)
+    if not cita:
+        raise HTTPException(status_code=404, detail="Cita no encontrada")
+
+    detalle = cita.to_dict()
+    if cita.slot:
+        detalle["slot"] = cita.slot.to_dict()
+    if hasattr(cita.paciente, 'to_dict'):
+        detalle["paciente_completo"] = cita.paciente.to_dict()
+    if hasattr(cita.doctor, 'to_dict'):
+        detalle["doctor_completo"] = cita.doctor.to_dict()
+
+    return {"cita": detalle}
 
 @router.put("/{id_cita}/modificar")
 def modificar_cita(id_cita: str, req: ModificarCitaRequest):
-    """Modificar doctor, slot y/o tipo de una cita existente"""
     cita = gestor.consultar_cita(id_cita)
     if not cita:
         raise HTTPException(status_code=404, detail="Cita no encontrada")
@@ -118,13 +141,6 @@ def modificar_cita(id_cita: str, req: ModificarCitaRequest):
     if not ok:
         raise HTTPException(status_code=409, detail="No se pudo modificar la cita")
     return {"mensaje": "Cita modificada exitosamente"}
-
-@router.get("/{id_cita}")
-def obtener_cita(id_cita: str):
-    cita = gestor.consultar_cita(id_cita)
-    if not cita:
-        raise HTTPException(status_code=404, detail="Cita no encontrada")
-    return {"cita": cita.to_dict()}
 
 @router.get("/paciente/{paciente_id}")
 def citas_por_paciente(paciente_id: str):

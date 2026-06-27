@@ -23,6 +23,16 @@ class Memoria:
         self._cargar_datos_por_defecto()
 
     def _cargar_datos_por_defecto(self):
+        # --- ADMINISTRADOR ---
+        administrador = Usuario(
+            id="A-001",
+            nombre="Admin Principal",
+            email="admin@clinica.com",
+            password="admin123",
+            rol=Rol.ADMINISTRADOR
+        )
+        self.usuarios.append(administrador)
+
         # --- RECEPCIONISTA ---
         recepcionista = Usuario(
             id="R-001",
@@ -85,7 +95,6 @@ class Memoria:
         hoy = datetime.now()
         for doctor in [doctor1, doctor2, doctor3]:
             agenda = AgendaDoctor(doctor)
-            # Generar slots para hoy y mañana
             for i in range(2):
                 dia = hoy + timedelta(days=i)
                 agenda.generar_slots(dia, intervalo_minutos=30)

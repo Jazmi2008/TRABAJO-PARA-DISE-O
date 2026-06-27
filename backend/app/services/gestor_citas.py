@@ -88,7 +88,10 @@ class GestorCitas(IConsultaCitas, IGestionCitas, IConfiguracionAgenda):
 
     def notificar_observadores(self, cita: Cita) -> None:
         for obs in self._observadores:
-            obs.actualizar(cita)
+            try:
+                obs.actualizar(cita)
+            except Exception as e:
+                print(f"[NOTIFICACION-ERROR] {type(obs).__name__}: {str(e)}")
 
     def registrar_cita(self, paciente, doctor, fabrica: CreadorCitas, slot: SlotHorario) -> Cita:
         if slot.estado != EstadoSlot.LIBRE:
@@ -140,20 +143,16 @@ class GestorCitas(IConsultaCitas, IGestionCitas, IConfiguracionAgenda):
         return True
 
     def modificar_cita_completa(self, id_cita: str, nuevo_doctor=None, nuevo_slot=None, nuevo_tipo=None) -> bool:
-        """Permite modificar doctor, slot y/o tipo de una cita existente"""
         cita = self.consultar_cita(id_cita)
         if not cita:
             return False
 
-        # Liberar slot anterior
         if cita.slot:
             cita.slot.liberar(cita.slot.version)
 
-        # Cambiar doctor si se proporciona
         if nuevo_doctor and nuevo_doctor.id != cita.doctor.id:
             cita._doctor = nuevo_doctor
 
-        # Cambiar slot si se proporciona
         if nuevo_slot:
             if nuevo_slot.estado != EstadoSlot.LIBRE:
                 return False
@@ -195,8 +194,8 @@ class GestorCitas(IConsultaCitas, IGestionCitas, IConfiguracionAgenda):
         mem = self._get_memoria()
         return mem.citas
 
-    def buscar_citas(self, fecha: Optional[str] = None, nombre: Optional[str] = None, id_cita: Optional[str] = None) -> List[Cita]:
-        """Busca citas por fecha, nombre de paciente o ID de cita"""
+    def buscar_citas(self, fecha: Optional[str] = None, nombre: Optional[str] = None, id_cita: Optional[str] = None,
+                     doctor_id: Optional[str] = None, paciente_id: Optional[str] = None) -> List[Cita]:
         mem = self._get_memoria()
         resultados = mem.citas[:]
 
@@ -214,6 +213,12 @@ class GestorCitas(IConsultaCitas, IGestionCitas, IConfiguracionAgenda):
         if nombre:
             nombre_lower = nombre.lower()
             resultados = [c for c in resultados if nombre_lower in c.paciente.nombre.lower()]
+
+        if doctor_id:
+            resultados = [c for c in resultados if c.doctor.id == doctor_id]
+
+        if paciente_id:
+            resultados = [c for c in resultados if c.paciente.id == paciente_id]
 
         return resultados
 

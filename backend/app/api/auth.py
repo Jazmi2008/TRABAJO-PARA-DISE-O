@@ -32,7 +32,11 @@ def registro(req: RegistroRequest):
     from ..models.paciente import Paciente
     from ..models.doctor import Doctor
 
-    rol = Rol(req.rol.upper())
+    try:
+        rol = Rol(req.rol.upper())
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Rol invalido")
+
     if rol == Rol.PACIENTE:
         usuario = Paciente(req.id, req.nombre, req.email, req.password, req.telefono)
     elif rol == Rol.DOCTOR:

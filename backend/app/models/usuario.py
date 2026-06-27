@@ -5,6 +5,7 @@ class Rol(Enum):
     DOCTOR = "DOCTOR"
     PACIENTE = "PACIENTE"
     RECEPCIONISTA = "RECEPCIONISTA"
+    ADMINISTRADOR = "ADMINISTRADOR"
 
 class Usuario:
     def __init__(self, id: str, nombre: str, email: str, password: str, rol: Rol):
