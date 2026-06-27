@@ -1,8 +1,41 @@
-# Proyecto Clinica
+# UNIVERSIDAD LA SALLE
+## Carrera Profesional de Ingeniería de Software
 
-Sistema de gestion de citas medicas con backend en FastAPI (Python) y frontend en React 19.
+---
+
+# FUNDAMENTOS DE DISEÑO DE SOFTWARE
+
+## TRABAJO FINAL
+### Aplicación de Patrones de Diseño en un Sistema de Gestión de Citas Médicas
+
+---
+
+**Docente:**  
+M.Sc. Ing. R. Fabrizio Calienes Rodríguez
+
+**Integrantes:**  
+- Ana Jazmín Duarte Guzmán
+- Danny Quispe Cjuiro
+- Selena Grisel Morales Díaz
+- Dayana Briyith Carrizales Salcedo
+- Rafaela Valeria Paredes Segura
+
+---
+
+**Arequipa, Perú — 2026**
+
+---
+
+# MEDICITAS FULLSTACK
+
+Sistema de gestión de citas médicas con backend en FastAPI (Python) y frontend en React 19.
 
 ## Datos por defecto (listos para usar)
+
+### Administrador
+| Email | Password |
+|-------|----------|
+| admin@clinica.com | admin123 |
 
 ### Recepcionista
 | Email | Password |
@@ -55,6 +88,13 @@ Sistema de gestion de citas medicas con backend en FastAPI (Python) y frontend e
 - **Cancelar y completar** cualquier cita
 - Agendar nuevas citas
 
+### Administrador
+- Dashboard con estadisticas del sistema
+- **CRUD de usuarios** (pacientes, doctores, recepcionistas)
+- Listado de todas las citas del sistema
+- **Busqueda avanzada** por doctor, paciente, fecha o recepcionista
+- Gestion completa de usuarios
+
 ---
 
 ## Estructura del Proyecto
@@ -78,6 +118,7 @@ proyecto-clinica/
 │   │   │   ├── DashboardPaciente.jsx
 │   │   │   ├── DashboardDoctor.jsx
 │   │   │   ├── DashboardRecepcionista.jsx
+│   │   │   ├── DashboardAdmin.jsx
 │   │   │   ├── CitasPaciente.jsx
 │   │   │   ├── CitasDoctor.jsx
 │   │   │   ├── CitasRecepcionista.jsx
@@ -120,10 +161,8 @@ proyecto-clinica/
 
 ```bash
 cd backend
-python -m venv venv
-source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+python -m uvicorn app.main:app --reload
 ```
 
 - Swagger UI: http://localhost:8000/docs
@@ -135,12 +174,43 @@ uvicorn app.main:app --reload --port 8000
 
 ```bash
 cd frontend
-npm install
-npm run dev
+python -m http.server 5500
 ```
 
-- Frontend: http://localhost:5173
+- Frontend: http://127.0.0.1:5500
 - El proxy en `vite.config.js` redirige `/api` al backend en `localhost:8000`
+
+---
+
+## MEDICITAS FRONTEND - PASOS RAPIDOS
+
+1) Primero prende el backend:
+   ```bash
+   cd carpeta-del-backend
+   pip install -r requirements.txt
+   python -m uvicorn app.main:app --reload
+   ```
+
+2) Luego abre el frontend:
+   - En Windows: doble clic en `abrir_frontend.bat`
+   - O manualmente:
+   ```bash
+   python -m http.server 5500
+   ```
+
+3) Entra a:
+   http://127.0.0.1:5500
+
+4) Credenciales:
+   | Rol | Email | Password |
+   |-----|-------|----------|
+   | Admin | admin@clinica.com | admin123 |
+   | Recepcionista | recepcion@clinica.com | recepcion123 |
+   | Medico | carlos.mendez@clinica.com | doctor123 |
+   | Paciente | juan.perez@email.com | paciente123 |
+
+5) URL del backend dentro del frontend:
+   http://127.0.0.1:8000
 
 ---
 
@@ -152,6 +222,7 @@ npm run dev
 | `/dashboard-paciente` | PACIENTE | Dashboard personal con proxima cita |
 | `/dashboard-doctor` | DOCTOR | Dashboard con historial editable |
 | `/dashboard-recepcionista` | RECEPCIONISTA | Panel con busqueda y filtros |
+| `/dashboard-admin` | ADMINISTRADOR | Panel de administracion de usuarios |
 | `/citas-paciente` | PACIENTE | Mis citas + detalle + cancelar |
 | `/citas-doctor` | DOCTOR | Citas + historial editable |
 | `/citas-recepcionista` | RECEPCIONISTA | Todas las citas + buscar + modificar |
